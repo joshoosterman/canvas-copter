@@ -1,0 +1,112 @@
+<head>
+  <title>CrazyCopter on HTML5 Canvas</title>
+  <script>
+    var copter = copter || {};
+    copter.levels = copter.levels || {};
+    copter.graphics = copter.graphics || {};
+  </script>
+  <script src='levels/farm1.js'></script>
+  <script src='levels/farm2.js'></script>
+  <script src='levels/farm3.js'></script>
+  <script src='levels/iraq1.js'></script>
+  <script src='levels/iraq2.js'></script>
+  <script src='levels/iraq3.js'></script>
+  <script src='levels/snow1.js'></script>
+  <script src='levels/snow2.js'></script>
+  <script src='levels/snow3.js'></script>
+  <script src='levels/bonus.js'></script>
+
+  <script src='src/graphics.js'></script>
+  <script src='src/game.js'></script>
+</head>
+<body>
+  <div id='level-select'>
+    <a href='?farm1'>level1</a>
+    <a href='?iraq1'>level2</a>
+    <a href='?snow1'>level3</a>
+    <a href='?farm2'>level4</a>
+    <a href='?iraq2'>level5</a>
+    <a href='?snow2'>level6</a>
+    <a href='?farm3'>level7</a>
+    <a href='?iraq3'>level8</a>
+    <a href='?snow3'>level9</a>
+    <a href='?bonus'>level10</a>
+  </div>
+  <canvas id='canvas' width='800px' height='416px'></canvas>
+  <script>
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+
+    // All required images.
+    var requiredImages = [
+        'blood.png',
+        'cloud.png',
+        'helicopter.png',
+        'helicopter_blades.png',
+        'helicopter_ladder.png',
+        'helicopter_gib_1.png',
+        'helicopter_gib_2.png',
+        'helicopter_gib_3.png',
+        'helicopter_trail.png',
+        'helicopter_trail_dead.png',
+        'hostage.png',
+        'hostage_gib_1.png',
+        'hostage_gib_2.png',
+        'hostage_gib_3.png',
+        'house.png',
+        'sheep.png',
+        'sky.png',
+        'sky_iraq.png',
+        'sky_night.png',
+        'star.png',
+        'star_burst.png',
+        'star_burst_special.png',
+        'star_special.png',
+        'terrorist_gib_1.png',
+        'tiles.png',
+        'tree.png',
+        'tree_snow.png',
+    ];
+    
+    // Called on page load.
+    var init = function() {
+      // Callback on image load. Starts the game once everything is loaded.
+      var imageLoadCallback = function() {
+        if (requiredImages.length == Object.keys(copter.graphics.ImageCache).length) {
+        console.log('All ' + requiredImages.length + ' images loaded, starting game.')
+            startGame();
+          }
+      };
+      // Load all images.
+      requiredImages.forEach(function(requiredImage) {
+        copter.graphics.loadImage(requiredImage, imageLoadCallback);
+      });
+      // Listen to mouse events.
+      canvas.onmousedown = function() {
+        window.mouseDown = true;
+      };
+      canvas.onmouseup = function() {
+        window.mouseDown = false;
+      };
+      canvas.ontouchstart = function() {
+        window.mouseDown = true;
+      };
+      canvas.ontouchend = function() {
+        window.mouseDown = false;
+      };
+    };
+
+    // Called once all resources loaded. Starts the game.
+    var startGame = function() {
+      var levelName = location.search.substring(1) || 'farm1';
+      var level = new copter.Level(copter.levels[levelName]);
+      var frame = function() {
+        level.step();
+        level.draw(ctx);
+      };
+      window.setInterval(frame, 1000 / 50);
+    }
+
+    init();
+  </script>
+</body>
